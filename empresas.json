@@ -11,7 +11,10 @@
     "telefone": "(11) 4091-7783",
     "site": "https://www.apoenabiotech.com/",
     "porte": "Startup",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "iff",
@@ -25,7 +28,10 @@
     "telefone": "",
     "site": "https://www.iff.com/",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "amyris",
@@ -39,7 +45,10 @@
     "telefone": "",
     "site": "amyris.com",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "hypera-pharma",
@@ -53,7 +62,10 @@
     "telefone": "",
     "site": "https://www.hypera.com.br/",
     "porte": "Nacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "beiersdorf",
@@ -67,7 +79,10 @@
     "telefone": "",
     "site": "http://beiersdorf.com.br/",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "suzano-jacarei",
@@ -81,7 +96,10 @@
     "telefone": "(11) 3636 5010",
     "site": "https://www.suzano.com.br/",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "soufflet-malt",
@@ -95,7 +113,10 @@
     "telefone": "",
     "site": "",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "borealis",
@@ -109,7 +130,10 @@
     "telefone": "(11) 4524.9177 e (11) 99267.5171",
     "site": "https://www.borealisgroup.com/brasil",
     "porte": "Nacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "bionovis",
@@ -123,7 +147,10 @@
     "telefone": "",
     "site": "https://bionovis.com.br/",
     "porte": "Nacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "comevap",
@@ -137,7 +164,10 @@
     "telefone": "",
     "site": "https://comevap.com.br/",
     "porte": "Nacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "rovensa-next",
@@ -151,7 +181,10 @@
     "telefone": "(43) 9158-2176",
     "site": "https://www.rovensanext.com.br/",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "biolinker-tech",
@@ -165,7 +198,10 @@
     "telefone": "(11) 4703-8588",
     "site": "https://biolinker.tech/",
     "porte": "Startup",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "iqt",
@@ -179,7 +215,10 @@
     "telefone": "(12) 2125-9606",
     "site": "http://iqt.com.br/",
     "porte": "Nacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "biotecblue",
@@ -193,7 +232,10 @@
     "telefone": "",
     "site": "https://biotecblue.com.br/",
     "porte": "Startup",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   },
   {
     "id": "adium",
@@ -207,6 +249,9 @@
     "telefone": "",
     "site": "",
     "porte": "Multinacional",
-    "estagio": ""
+    "estagio": "",
+    "remunerado": "Não informado",
+    "vale_refeicao": "Não informado",
+    "vale_alimentacao": "Não informado"
   }
 ]
