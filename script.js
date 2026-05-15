@@ -33,6 +33,7 @@ let MARKERS = [];
 let ALL_AREAS = [];
 
 const filtersAreaEl = document.getElementById('filters-area');
+const filtersPorteEl = document.getElementById('filters-porte');
 
 // ====== Distância ======
 function haversine(lat1, lon1, lat2, lon2) {
@@ -72,7 +73,7 @@ function uniq(arr) {
   return [...new Set(arr)];
 }
 
-// ====== Filtros de área ======
+// ====== Filtros de área e de porte ======
 function renderAreaFilters(areas) {
 
   filtersAreaEl.innerHTML = `
@@ -104,7 +105,7 @@ function renderAreaFilters(areas) {
     </div>
   `;
 
-  // Checkbox "todos"
+  // Checkbox "todos" da Área
   const allId = 'area__todos';
 
   filtersAreaEl.insertAdjacentHTML('beforeend', `
@@ -131,58 +132,83 @@ function renderAreaFilters(areas) {
     `);
   });
 
-  // ====== Eventos ======
+  // Renderizar Filtros de Porte de forma fixa
+  const portesDisponiveis = ["Startup", "Nacional", "Multinacional", "Universidade"];
+  
+  filtersPorteEl.innerHTML = `
+    <label class="filterItem" for="porte__todos">
+      <input type="checkbox" id="porte__todos" checked />
+      <span>Todos</span>
+    </label>
+  `;
+  
+  portesDisponiveis.forEach((porte, idx) => {
+    const id = `porte__${idx}`;
+
+    filtersPorteEl.insertAdjacentHTML('beforeend', `
+      <label class="filterItem" for="${id}">
+        <input
+          type="checkbox"
+          id="${id}"
+          data-porte="${porte}"
+          checked
+        />
+        <span>${porte}</span>
+      </label>
+    `);
+  });
+
+  // ====== Eventos de Área ======
   const allCb = document.getElementById(allId);
+  const itemCbs = filtersAreaEl.querySelectorAll('input[type="checkbox"][data-area]');
 
   allCb.addEventListener('change', () => {
-
-    const checks = filtersAreaEl.querySelectorAll(
-      'input[type="checkbox"][data-area]'
-    );
-
-    checks.forEach(cb => cb.checked = allCb.checked);
-
+    itemCbs.forEach(cb => cb.checked = allCb.checked);
     applyFilters();
   });
 
-  const itemCbs = filtersAreaEl.querySelectorAll(
-    'input[type="checkbox"][data-area]'
-  );
-
   itemCbs.forEach(cb => {
-
     cb.addEventListener('change', () => {
-
-      const allChecked = [...itemCbs].every(x => x.checked);
-
-      allCb.checked = allChecked;
-
+      allCb.checked = [...itemCbs].every(x => x.checked);
       applyFilters();
     });
+  });
 
+  // ====== Eventos de Porte ======
+  const allPorteCb = document.getElementById('porte__todos');
+  const itemPorteCbs = filtersPorteEl.querySelectorAll('input[type="checkbox"][data-porte]');
+
+  allPorteCb.addEventListener('change', () => {
+    itemPorteCbs.forEach(cb => cb.checked = allPorteCb.checked);
+    applyFilters();
+  });
+
+  itemPorteCbs.forEach(cb => {
+    cb.addEventListener('change', () => {
+      allPorteCb.checked = [...itemPorteCbs].every(x => x.checked);
+      applyFilters();
+    });
   });
 
   // Filtro distância
   const distanceFilter = document.getElementById('distanceFilter');
-
   distanceFilter.addEventListener('change', applyFilters);
 
   // Limpar filtros
   const btnLimpar = document.getElementById('btnLimpar');
 
   if (btnLimpar) {
-
     btnLimpar.onclick = () => {
-
       allCb.checked = true;
-
       itemCbs.forEach(cb => cb.checked = true);
+      
+      allPorteCb.checked = true;
+      itemPorteCbs.forEach(cb => cb.checked = true);
 
       distanceFilter.value = "999999";
 
       applyFilters();
     };
-
   }
 }
 
@@ -190,46 +216,37 @@ function renderAreaFilters(areas) {
 function applyFilters() {
 
   const selectedAreas = [
-    ...filtersAreaEl.querySelectorAll(
-      'input[type="checkbox"][data-area]:checked'
-    )
+    ...filtersAreaEl.querySelectorAll('input[type="checkbox"][data-area]:checked')
   ].map(cb => cb.getAttribute('data-area'));
 
-  const hideAll = selectedAreas.length === 0;
+  const selectedPortes = [
+    ...filtersPorteEl.querySelectorAll('input[type="checkbox"][data-porte]:checked')
+  ].map(cb => cb.getAttribute('data-porte'));
 
-  const maxDistance = Number(
-    document.getElementById('distanceFilter').value
-  );
+  const maxDistance = Number(document.getElementById('distanceFilter').value);
 
-  MARKERS.forEach(({ marker, areas, distance }) => {
+  MARKERS.forEach(({ emp, marker, areas, distance }) => {
 
-    const areaMatch =
-      !hideAll &&
-      areas.some(a => selectedAreas.includes(a));
+    const areaMatch = selectedAreas.length > 0 && areas.some(a => selectedAreas.includes(a));
+    
+    const empresaPorte = emp.porte ?? "";
+    const porteMatch = selectedPortes.length > 0 && selectedPortes.includes(empresaPorte);
 
-    const distanceMatch =
-      distance <= maxDistance;
+    const distanceMatch = distance <= maxDistance;
 
-    const visible =
-      areaMatch &&
-      distanceMatch;
+    const visible = areaMatch && porteMatch && distanceMatch;
 
     if (visible) {
-
       if (!map.hasLayer(marker)) {
         marker.addTo(map);
       }
-
     } else {
-
       if (map.hasLayer(marker)) {
         map.removeLayer(marker);
       }
-
     }
 
   });
-
 }
 
 // ====== Popup ======
@@ -274,9 +291,7 @@ function popupHtml(emp, distance) {
         font-size:0.70rem;
         font-family:'Segoe UI', sans-serif;
       ">
-        # ${emp.area ?? (Array.isArray(emp.areas)
-          ? emp.areas.join(", ")
-          : "")}
+        # ${emp.area ?? (Array.isArray(emp.areas) ? emp.areas.join(", ") : "")}
       </div>
 
       ${linkBtn}
@@ -287,9 +302,7 @@ function popupHtml(emp, distance) {
 
 // ====== Carregar dados ======
 fetch('empresas.json')
-
   .then(r => r.json())
-
   .then(empresas => {
 
     EMPRESAS = empresas;
@@ -330,17 +343,9 @@ fetch('empresas.json')
     );
 
     renderAreaFilters(ALL_AREAS);
-
     applyFilters();
 
   })
-
   .catch(err => {
     console.error('Erro ao carregar empresas.json', err);
   });
-
-
-
-
-
-
