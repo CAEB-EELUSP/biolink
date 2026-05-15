@@ -34,6 +34,8 @@ let ALL_AREAS = [];
 let ALL_TIPOS = [];
 
 const filtersAreaEl = document.getElementById('filters-area');
+const filtersTipoEl = document.getElementById('filters-tipo');
+
 
 // ====== Distância ======
 function haversine(lat1, lon1, lat2, lon2) {
