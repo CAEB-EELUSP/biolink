@@ -1,16 +1,33 @@
 // ====== Configuração do mapa (Sudeste travado) ======
-const sudesteBounds = L.latLngBounds([[-25.5, -52.0], [-17.0, -38.0]]);
-const map = L.map('map', { maxBounds: sudesteBounds, maxBoundsViscosity: 1.0 });
+
+const sudesteBounds = L.latLngBounds([
+  [-25.5, -52.0],
+  [-17.0, -38.0]
+]);
+
+const map = L.map('map', {
+  maxBounds: sudesteBounds,
+  maxBoundsViscosity: 1.0
+});
 
 map.fitBounds(sudesteBounds);
-map.setMinZoom(map.getBoundsZoom(sudesteBounds));
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+map.setMinZoom(
+  map.getBoundsZoom(sudesteBounds)
+);
 
-// ====== Coordenadas da EEL USP Lorena ======
+// ====== Tile Layer ======
+
+L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }
+).addTo(map);
+
+// ====== Coordenadas da EEL USP ======
+
 const EEL = {
   nome: "Escola de Engenharia de Lorena (EEL-USP)",
   lat: -22.5764,
@@ -18,53 +35,90 @@ const EEL = {
 };
 
 // ====== Ícone laranja ======
+
 const orangeIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+
+  iconUrl:
+    'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+
+  shadowUrl:
+    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+
   iconSize: [25, 41],
+
   iconAnchor: [12, 41],
+
   popupAnchor: [1, -34],
+
   shadowSize: [41, 41]
+
 });
 
 // ====== Estado global ======
+
 let EMPRESAS = [];
+
 let MARKERS = [];
+
 let ALL_AREAS = [];
+
 let ALL_TIPOS = [];
 
-const filtersAreaEl = document.getElementById('filters-area');
-const filtersTipoEl = document.getElementById('filters-tipo');
+const filtersAreaEl =
+  document.getElementById('filters-area');
 
+const filtersTipoEl =
+  document.getElementById('filters-tipo');
 
 // ====== Distância ======
+
 function haversine(lat1, lon1, lat2, lon2) {
+
   const R = 6371;
 
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const dLat =
+    (lat2 - lat1) * Math.PI / 180;
+
+  const dLon =
+    (lon2 - lon1) * Math.PI / 180;
 
   const a =
     Math.sin(dLat / 2) ** 2 +
+
     Math.cos(lat1 * Math.PI / 180) *
+
     Math.cos(lat2 * Math.PI / 180) *
+
     Math.sin(dLon / 2) ** 2;
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c =
+    2 * Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
 
   return R * c;
 }
 
 // ====== Helpers ======
+
 function parseAreas(emp) {
+
   if (Array.isArray(emp.areas)) {
-    return emp.areas.map(a => String(a).trim()).filter(Boolean);
+
+    return emp.areas
+      .map(a => String(a).trim())
+      .filter(Boolean);
   }
 
   if (emp.area) {
+
     return String(emp.area)
+
       .split(/[,;|•\/]/g)
+
       .map(a => a.trim())
+
       .filter(Boolean);
   }
 
@@ -74,6 +128,526 @@ function parseAreas(emp) {
 function uniq(arr) {
   return [...new Set(arr)];
 }
+
+// ====== FILTROS ÁREA ======
+
+function renderAreaFilters(areas) {
+
+  filtersAreaEl.innerHTML = `
+
+    <div style="margin-bottom:12px;">
+
+      <div style="font-weight:700;margin-bottom:4px;">
+        Distância máxima da EEL-USP
+      </div>
+
+      <select
+        id="distanceFilter"
+
+        style="
+          width:100%;
+          padding:8px;
+          border-radius:8px;
+          border:none;
+          font-weight:600;
+        "
+      >
+
+        <option value="999999">
+          Sem limite
+        </option>
+
+        <option value="50">
+          Até 50 km
+        </option>
+
+        <option value="100">
+          Até 100 km
+        </option>
+
+        <option value="200">
+          Até 200 km
+        </option>
+
+        <option value="300">
+          Até 300 km
+        </option>
+
+      </select>
+
+    </div>
+
+    <div style="font-weight:700;margin:.2rem 0 .4rem;">
+      Área
+    </div>
+  `;
+
+  // TODOS
+
+  const allId = 'area__todos';
+
+  filtersAreaEl.insertAdjacentHTML(
+    'beforeend',
+
+    `
+    <label class="filterItem" for="${allId}">
+      <input
+        type="checkbox"
+        id="${allId}"
+        checked
+      />
+
+      <span>Todos</span>
+    </label>
+    `
+  );
+
+  // ÁREAS
+
+  areas.forEach((area, idx) => {
+
+    const id = `area__${idx}`;
+
+    filtersAreaEl.insertAdjacentHTML(
+      'beforeend',
+
+      `
+      <label class="filterItem" for="${id}">
+
+        <input
+          type="checkbox"
+          id="${id}"
+          data-area="${area}"
+          checked
+        />
+
+        <span>${area}</span>
+
+      </label>
+      `
+    );
+
+  });
+
+  const allCb =
+    document.getElementById(allId);
+
+  const itemCbs =
+    filtersAreaEl.querySelectorAll(
+      'input[type="checkbox"][data-area]'
+    );
+
+  allCb.addEventListener('change', () => {
+
+    itemCbs.forEach(cb => {
+      cb.checked = allCb.checked;
+    });
+
+    applyFilters();
+  });
+
+  itemCbs.forEach(cb => {
+
+    cb.addEventListener('change', () => {
+
+      const allChecked =
+        [...itemCbs].every(x => x.checked);
+
+      allCb.checked = allChecked;
+
+      applyFilters();
+
+    });
+
+  });
+
+  // DISTÂNCIA
+
+  const distanceFilter =
+    document.getElementById('distanceFilter');
+
+  distanceFilter.addEventListener(
+    'change',
+    applyFilters
+  );
+
+  // LIMPAR
+
+  const btnLimpar =
+    document.getElementById('btnLimpar');
+
+  if (btnLimpar) {
+
+    btnLimpar.onclick = () => {
+
+      allCb.checked = true;
+
+      itemCbs.forEach(cb => {
+        cb.checked = true;
+      });
+
+      distanceFilter.value = "999999";
+
+      applyFilters();
+
+    };
+
+  }
+
+}
+
+// ====== FILTRO TIPO ======
+
+function renderTipoFilters(tipos) {
+
+  filtersTipoEl.innerHTML = '';
+
+  const allId = 'tipo__todos';
+
+  filtersTipoEl.insertAdjacentHTML(
+    'beforeend',
+
+    `
+    <label class="filterItem" for="${allId}">
+      <input
+        type="checkbox"
+        id="${allId}"
+        checked
+      />
+
+      <span>Todos</span>
+    </label>
+    `
+  );
+
+  tipos.forEach((tipo, idx) => {
+
+    const id = `tipo__${idx}`;
+
+    filtersTipoEl.insertAdjacentHTML(
+      'beforeend',
+
+      `
+      <label class="filterItem" for="${id}">
+
+        <input
+          type="checkbox"
+          id="${id}"
+          data-tipo="${tipo}"
+          checked
+        />
+
+        <span>${tipo}</span>
+
+      </label>
+      `
+    );
+
+  });
+
+  const allCb =
+    document.getElementById(allId);
+
+  const itemCbs =
+    filtersTipoEl.querySelectorAll(
+      'input[type="checkbox"][data-tipo]'
+    );
+
+  allCb.addEventListener('change', () => {
+
+    itemCbs.forEach(cb => {
+      cb.checked = allCb.checked;
+    });
+
+    applyFilters();
+
+  });
+
+  itemCbs.forEach(cb => {
+
+    cb.addEventListener('change', () => {
+
+      const allChecked =
+        [...itemCbs].every(x => x.checked);
+
+      allCb.checked = allChecked;
+
+      applyFilters();
+
+    });
+
+  });
+
+}
+
+// ====== APLICAR FILTROS ======
+
+function applyFilters() {
+
+  const selectedAreas = [
+
+    ...filtersAreaEl.querySelectorAll(
+      'input[type="checkbox"][data-area]:checked'
+    )
+
+  ].map(cb =>
+    cb.getAttribute('data-area')
+  );
+
+  const selectedTipos = [
+
+    ...filtersTipoEl.querySelectorAll(
+      'input[type="checkbox"][data-tipo]:checked'
+    )
+
+  ].map(cb =>
+    cb.getAttribute('data-tipo')
+  );
+
+  const hideAll =
+    selectedAreas.length === 0;
+
+  const maxDistance = Number(
+    document.getElementById(
+      'distanceFilter'
+    ).value
+  );
+
+  MARKERS.forEach(({
+    emp,
+    marker,
+    areas,
+    distance
+  }) => {
+
+    const areaMatch =
+
+      !hideAll &&
+
+      areas.some(a =>
+        selectedAreas.includes(a)
+      );
+
+    const tipoMatch =
+      selectedTipos.includes(emp.tipo);
+
+    const distanceMatch =
+      distance <= maxDistance;
+
+    const visible =
+
+      areaMatch &&
+
+      tipoMatch &&
+
+      distanceMatch;
+
+    if (visible) {
+
+      if (!map.hasLayer(marker)) {
+        marker.addTo(map);
+      }
+
+    } else {
+
+      if (map.hasLayer(marker)) {
+        map.removeLayer(marker);
+      }
+
+    }
+
+  });
+
+}
+
+// ====== POPUP ======
+
+function popupHtml(emp, distance) {
+
+  return `
+
+    <div style="
+      width:240px;
+      font-family:Segoe UI,sans-serif;
+    ">
+
+      <!-- IMAGEM -->
+
+      <img
+        src="${emp.foto ?? 'img/placeholder.jpg'}"
+
+        alt="${emp.nome}"
+
+        style="
+          width:100%;
+          height:140px;
+          object-fit:cover;
+          border-radius:12px;
+          margin-bottom:10px;
+        "
+      >
+
+      <!-- NOME -->
+
+      <div style="
+        font-size:1rem;
+        font-weight:700;
+        color:#111;
+      ">
+        ${emp.nome}
+      </div>
+
+      <!-- CIDADE -->
+
+      <div style="
+        color:#666;
+        font-size:.85rem;
+        margin-top:2px;
+      ">
+        ${emp.cidade ?? ""}
+      </div>
+
+      <!-- RESUMO -->
+
+      <div style="
+        margin-top:8px;
+        color:#444;
+        font-size:.82rem;
+        line-height:1.4;
+      ">
+        ${(emp.resumo ?? '-').slice(0, 120)}...
+      </div>
+
+      <!-- DISTÂNCIA -->
+
+      <div style="
+        margin-top:10px;
+        font-size:.78rem;
+        color:#777;
+        font-weight:600;
+      ">
+        📍 ${distance.toFixed(1)} km da EEL-USP
+      </div>
+
+      <!-- BOTÃO -->
+
+      <a
+        href="detalhes.html?id=${emp.id}"
+
+        style="
+          display:block;
+          margin-top:12px;
+          text-align:center;
+          padding:10px;
+          background:#eb6213;
+          color:white;
+          text-decoration:none;
+          border-radius:10px;
+          font-weight:700;
+        "
+      >
+        Saiba mais
+      </a>
+
+    </div>
+
+  `;
+}
+
+// ====== CARREGAR DADOS ======
+
+fetch('empresas.json')
+
+  .then(r => r.json())
+
+  .then(empresas => {
+
+    EMPRESAS = empresas;
+
+    MARKERS = empresas.map(emp => {
+
+      const areas =
+        parseAreas(emp);
+
+      const distance =
+        haversine(
+          EEL.lat,
+          EEL.lng,
+          emp.lat,
+          emp.lng
+        );
+
+      const marker =
+
+        L.marker(
+          [emp.lat, emp.lng],
+          { icon: orangeIcon }
+        )
+
+        .bindPopup(
+          popupHtml(emp, distance),
+          {
+            maxWidth: 260
+          }
+        )
+
+        .addTo(map);
+
+      return {
+        emp,
+        marker,
+        areas,
+        distance
+      };
+
+    });
+
+    // ÁREAS
+
+    ALL_AREAS = uniq(
+
+      MARKERS.flatMap(
+        m => m.areas
+      )
+
+    ).sort((a, b) =>
+
+      a.localeCompare(
+        b,
+        'pt-BR',
+        { sensitivity: 'base' }
+      )
+
+    );
+
+    // TIPOS
+
+    ALL_TIPOS = uniq(
+
+      empresas
+        .map(e => e.tipo)
+        .filter(Boolean)
+
+    ).sort();
+
+    // RENDER
+
+    renderAreaFilters(ALL_AREAS);
+
+    renderTipoFilters(ALL_TIPOS);
+
+    applyFilters();
+
+  })
+
+  .catch(err => {
+
+    console.error(
+      'Erro ao carregar empresas.json',
+      err
+    );
+
+  });}
 
 // ====== Filtros de área ======
 function renderAreaFilters(areas) {
