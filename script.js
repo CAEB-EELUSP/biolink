@@ -100,7 +100,6 @@ function renderAreaFilters(areas) {
       </select>
     </div>
 
-    <!-- Ajustado: Filtro apenas com foco em Remuneração -->
     <div style="margin-bottom:12px; border-bottom:1px solid #ddd; padding-bottom:12px;">
       <div style="font-weight:700;margin-bottom:4px;">Remuneração</div>
       <label class="filterItem" for="filtro__remunerado">
@@ -114,7 +113,6 @@ function renderAreaFilters(areas) {
     </div>
   `;
 
-  // Checkbox "todos" da Área
   const allId = 'area__todos';
 
   filtersAreaEl.insertAdjacentHTML('beforeend', `
@@ -124,7 +122,6 @@ function renderAreaFilters(areas) {
     </label>
   `);
 
-  // Áreas
   areas.forEach((area, idx) => {
     const id = `area__${idx}`;
 
@@ -141,7 +138,6 @@ function renderAreaFilters(areas) {
     `);
   });
 
-  // Renderizar Filtros de Porte de forma fixa
   const portesDisponiveis = ["Startup", "Nacional", "Multinacional", "Universidade"];
   
   filtersPorteEl.innerHTML = `
@@ -167,7 +163,6 @@ function renderAreaFilters(areas) {
     `);
   });
 
-  // ====== Eventos de Área ======
   const allCb = document.getElementById(allId);
   const itemCbs = filtersAreaEl.querySelectorAll('input[type="checkbox"][data-area]');
 
@@ -183,7 +178,6 @@ function renderAreaFilters(areas) {
     });
   });
 
-  // ====== Eventos de Porte ======
   const allPorteCb = document.getElementById('porte__todos');
   const itemPorteCbs = filtersPorteEl.querySelectorAll('input[type="checkbox"][data-porte]');
 
@@ -199,15 +193,12 @@ function renderAreaFilters(areas) {
     });
   });
 
-  // Evento do Filtro de Remuneração
   const filtroRemunerado = document.getElementById('filtro__remunerado');
   filtroRemunerado.addEventListener('change', applyFilters);
 
-  // Filtro distância
   const distanceFilter = document.getElementById('distanceFilter');
   distanceFilter.addEventListener('change', applyFilters);
 
-  // Limpar filtros
   const btnLimpar = document.getElementById('btnLimpar');
 
   if (btnLimpar) {
@@ -269,12 +260,16 @@ function applyFilters() {
   });
 }
 
-// ====== Popup com Imagem da Empresa e Informações ======
+// ====== Popup com Imagem, Resumo e Informações ======
 function popupHtml(emp, distance) {
 
-  // Se houver imagem cadastrada, monta o HTML da foto com tamanho controlado
   const imagemHtml = emp.imagem 
     ? `<img src="${emp.imagem}" alt="${emp.nome}" style="width:100%; max-height:110px; object-fit:cover; border-radius:8px; margin-bottom:8px;" />` 
+    : '';
+
+  // Nova seção: Resumo Curto de até 3 linhas
+  const resumoHtml = emp.resumo 
+    ? `<div style="margin-top:8px; font-size:0.80rem; color:#666; line-height:1.3; border-top:1px dashed #eee; padding-top:6px;">${emp.resumo}</div>` 
     : '';
 
   const bolsaTexto = emp.remunerado ? `💰 Remunerado: ${emp.remunerado}` : '💰 Remunerado: -';
@@ -283,39 +278,34 @@ function popupHtml(emp, distance) {
     <a href="detalhes.html?id=${emp.id}"
        style="
          display:inline-block;
-         margin-top:8px;
+         margin-top:10px;
          padding:8px 12px;
          border-radius:10px;
          background:#eb6213;
          color:#fff;
          text-decoration:none;
          font-weight:700;
+         text-align:center;
+         width:calc(100% - 24px);
        ">
        Saiba mais
     </a>`;
 
   return `
-    <div style="min-width:220px">
+    <div style="width:230px">
       
       ${imagemHtml}
 
-      <strong>${emp.nome}</strong>
+      <strong style="font-size:0.95rem;">${emp.nome}</strong>
 
-      <div style="margin-top:4px;color:#555">
-        ${emp.cidade ?? ""}
+      <div style="margin-top:2px;color:#888;font-size:0.80rem;">
+        📍 ${emp.cidade ?? ""} (${distance.toFixed(1)} km da EEL)
       </div>
 
-      <div style="
-        margin-top:6px;
-        color:#444;
-        font-size:0.82rem;
-        font-weight:600;
-      ">
-        📍 ${distance.toFixed(1)} km da EEL-USP
-      </div>
+      ${resumoHtml}
 
       <div style="
-        margin-top:4px;
+        margin-top:8px;
         color:#2e7d32;
         font-size:0.82rem;
         font-weight:700;
