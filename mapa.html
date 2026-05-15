@@ -4,89 +4,264 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bio Link</title>
+
   <link rel="icon" type="image/png" href="icon.png">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
   <style>
-    :root { --laranja:#F6702F; --texto:#fff; }
+
+    :root {
+      --laranja:#F6702F;
+      --texto:#fff;
+    }
+
     body {
-      margin: 0; display: flex; height: 100vh;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+
+      font-family:
+        system-ui,
+        -apple-system,
+        Segoe UI,
+        Roboto,
+        Ubuntu,
+        Cantarell,
+        Arial,
+        sans-serif;
+
       background: var(--laranja);
     }
 
-    /* Sidebar com filtros */
+    /* Sidebar */
+
     #sidebar {
-      width: 220px; background: var(--laranja); color: var(--texto);
-      padding: .9rem; display: flex; flex-direction: column; gap: .8rem;
+
+      width: 220px;
+
+      background: var(--laranja);
+
+      color: var(--texto);
+
+      padding: .9rem;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: .8rem;
+
       border-right: 1px solid rgba(0,0,0,.08);
     }
-    #sidebar a { color: #fff; text-decoration: none; }
-    #sidebar a:hover { text-decoration: underline; }
-    .btn {
-      background: #fff; color: #111; border: none; border-radius: 12px;
-      padding: .30rem .8rem; cursor: pointer; font-weight: 700; text-decoration: none; text-align:center;
+
+    #sidebar a {
+      color: #fff;
+      text-decoration: none;
     }
-    .sectionTitle { font-weight: 800; margin-top: .2rem; }
-    .filtersBox {
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(0,0,0,.08);
+
+    #sidebar a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+
+      background: #fff;
+
+      color: #111;
+
+      border: none;
+
       border-radius: 12px;
+
+      padding: .30rem .8rem;
+
+      cursor: pointer;
+
+      font-weight: 700;
+
+      text-decoration: none;
+
+      text-align:center;
+    }
+
+    .sectionTitle {
+      font-weight: 800;
+      margin-top: .2rem;
+    }
+
+    .filtersBox {
+
+      background: rgba(255,255,255,.12);
+
+      border: 1px solid rgba(0,0,0,.08);
+
+      border-radius: 12px;
+
       padding: .6rem .6rem .4rem;
+
       overflow: auto;
+
       max-height: calc(100vh - 180px);
     }
-    .filterItem { display: flex; align-items: center; gap: .5rem; margin: .25rem 0; }
-    .filterItem input { transform: translateY(1px); }
+
+    .filterItem {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: .5rem;
+
+      margin: .25rem 0;
+    }
+
+    .filterItem input {
+      transform: translateY(1px);
+    }
 
     /* Área principal */
-    #main { flex: 1; display: flex; flex-direction: column; }
+
+    #main {
+
+      flex: 1;
+
+      display: flex;
+
+      flex-direction: column;
+    }
+
     #topbar {
-      height: 50px; background: var(--laranja); color: var(--texto);
-      display: flex; align-items: center; padding: 0 1rem; font-weight: bold; justify-content: space-between;
+
+      height: 50px;
+
+      background: var(--laranja);
+
+      color: var(--texto);
+
+      display: flex;
+
+      align-items: center;
+
+      padding: 0 1rem;
+
+      font-weight: bold;
+
+      justify-content: space-between;
+
       border-bottom: 1px solid rgba(0,0,0,.08);
     }
-    #map { flex: 1; width: 100%; }
+
+    #map {
+      flex: 1;
+      width: 100%;
+    }
+
   </style>
 </head>
-<body>
-  <aside id="sidebar">
-    <div class="sectionTitle">Bio Link</div>
-    <a class="btn" href="index.html"><button class="btn">◀️ Voltar</button></a>
-      <p style="font-size: 0.75rem; font-style: italic;">
-        *A base de dados ainda está sendo atualizada.
-      </p>
-    <div class="sectionTitle">Filtros</div>
-    <div class="filtersBox">
-      <div style="font-weight:700;margin:.2rem 0 .4rem;">Área</div>
-      <!-- checkboxes de área serão inseridos aqui pelo script -->
-      <div id="filters-area"></div>
-      <div style="font-weight:700;margin:1rem 0 .4rem;">
-  Tamanho/Tipo
-</div>
 
-<div id="filters-tipo"></div>
+<body>
+
+  <!-- Sidebar -->
+
+  <aside id="sidebar">
+
+    <div class="sectionTitle">
+      Bio Link
     </div>
 
-    <button id="btnLimpar" class="btn" style="margin-top:.4rem;">Limpar filtros</button>
+    <a class="btn" href="index.html">
+      <button class="btn">
+        ◀️ Voltar
+      </button>
+    </a>
+
+    <p style="font-size: 0.75rem; font-style: italic;">
+      *A base de dados ainda está sendo atualizada.
+    </p>
+
+    <div class="sectionTitle">
+      Filtros
+    </div>
+
+    <div class="filtersBox">
+
+      <!-- FILTRO ÁREA -->
+
+      <div style="font-weight:700;margin:.2rem 0 .4rem;">
+        Área
+      </div>
+
+      <div id="filters-area"></div>
+
+      <!-- NOVO FILTRO -->
+
+      <div style="font-weight:700;margin:1rem 0 .4rem;">
+        Tamanho/Tipo
+      </div>
+
+      <div id="filters-tipo"></div>
+
+    </div>
+
+    <button
+      id="btnLimpar"
+      class="btn"
+      style="margin-top:.4rem;"
+    >
+      Limpar filtros
+    </button>
+
   </aside>
 
-<div id="main">
-  <div id="topbar" style="background:#737373; display:flex; justify-content:space-between; align-items:center;">
+  <!-- MAIN -->
 
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div>Mapa • Sudeste</div>
+  <div id="main">
 
-      <img src="header.png"
-           alt="header"
-           style="margin-top:4px; height:40px; object-fit:contain;">
+    <div
+      id="topbar"
+      style="
+        background:#737373;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      "
+    >
+
+      <div style="display:flex; align-items:center; gap:10px;">
+
+        <div>
+          Mapa • Sudeste
+        </div>
+
+        <img
+          src="header.png"
+          alt="header"
+          style="
+            margin-top:4px;
+            height:40px;
+            object-fit:contain;
+          "
+        >
+
+      </div>
+
     </div>
+
+    <div id="map"></div>
 
   </div>
 
-  <div id="map"></div>
-</div>
+  <!-- Leaflet -->
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Script -->
+
   <script src="script.js?v=3"></script>
+
 </body>
 </html>
