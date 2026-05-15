@@ -73,7 +73,7 @@ function uniq(arr) {
   return [...new Set(arr)];
 }
 
-// ====== Filtros de área e de porte ======
+// ====== Filtros de área, porte e remuneração ======
 function renderAreaFilters(areas) {
 
   filtersAreaEl.innerHTML = `
@@ -98,6 +98,15 @@ function renderAreaFilters(areas) {
         <option value="300">Até 300 km</option>
 
       </select>
+    </div>
+
+    <!-- Ajustado: Filtro apenas com foco em Remuneração -->
+    <div style="margin-bottom:12px; border-bottom:1px solid #ddd; padding-bottom:12px;">
+      <div style="font-weight:700;margin-bottom:4px;">Remuneração</div>
+      <label class="filterItem" for="filtro__remunerado">
+        <input type="checkbox" id="filtro__remunerado" />
+        <span style="font-weight:600; color:#2e7d32;">💰 Apenas Remunerados</span>
+      </label>
     </div>
 
     <div style="font-weight:700;margin:.2rem 0 .4rem;">
@@ -190,6 +199,10 @@ function renderAreaFilters(areas) {
     });
   });
 
+  // Evento do Filtro de Remuneração
+  const filtroRemunerado = document.getElementById('filtro__remunerado');
+  filtroRemunerado.addEventListener('change', applyFilters);
+
   // Filtro distância
   const distanceFilter = document.getElementById('distanceFilter');
   distanceFilter.addEventListener('change', applyFilters);
@@ -205,6 +218,7 @@ function renderAreaFilters(areas) {
       allPorteCb.checked = true;
       itemPorteCbs.forEach(cb => cb.checked = true);
 
+      filtroRemunerado.checked = false;
       distanceFilter.value = "999999";
 
       applyFilters();
@@ -224,6 +238,7 @@ function applyFilters() {
   ].map(cb => cb.getAttribute('data-porte'));
 
   const maxDistance = Number(document.getElementById('distanceFilter').value);
+  const apenasRemunerados = document.getElementById('filtro__remunerado').checked;
 
   MARKERS.forEach(({ emp, marker, areas, distance }) => {
 
@@ -234,7 +249,12 @@ function applyFilters() {
 
     const distanceMatch = distance <= maxDistance;
 
-    const visible = areaMatch && porteMatch && distanceMatch;
+    let remuneradoMatch = true;
+    if (apenasRemunerados) {
+      remuneradoMatch = (emp.remunerado && emp.remunerado.toLowerCase() === "sim");
+    }
+
+    const visible = areaMatch && porteMatch && distanceMatch && remuneradoMatch;
 
     if (visible) {
       if (!map.hasLayer(marker)) {
@@ -249,8 +269,13 @@ function applyFilters() {
   });
 }
 
-// ====== Popup com informação de Remuneração Ajustada ======
+// ====== Popup com Imagem da Empresa e Informações ======
 function popupHtml(emp, distance) {
+
+  // Se houver imagem cadastrada, monta o HTML da foto com tamanho controlado
+  const imagemHtml = emp.imagem 
+    ? `<img src="${emp.imagem}" alt="${emp.nome}" style="width:100%; max-height:110px; object-fit:cover; border-radius:8px; margin-bottom:8px;" />` 
+    : '';
 
   const bolsaTexto = emp.remunerado ? `💰 Remunerado: ${emp.remunerado}` : '💰 Remunerado: -';
 
@@ -271,6 +296,8 @@ function popupHtml(emp, distance) {
 
   return `
     <div style="min-width:220px">
+      
+      ${imagemHtml}
 
       <strong>${emp.nome}</strong>
 
