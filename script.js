@@ -231,7 +231,68 @@ function applyFilters() {
 
     }
 
+  })
+    function renderTipoFilters(tipos) {
+
+  filtersTipoEl.innerHTML = '';
+
+  const allId = 'tipo__todos';
+
+  filtersTipoEl.insertAdjacentHTML('beforeend', `
+    <label class="filterItem" for="${allId}">
+      <input type="checkbox" id="${allId}" checked />
+      <span>Todos</span>
+    </label>
+  `);
+
+  tipos.forEach((tipo, idx) => {
+
+    const id = `tipo__${idx}`;
+
+    filtersTipoEl.insertAdjacentHTML('beforeend', `
+      <label class="filterItem" for="${id}">
+        <input
+          type="checkbox"
+          id="${id}"
+          data-tipo="${tipo}"
+          checked
+        />
+        <span>${tipo}</span>
+      </label>
+    `);
+
   });
+
+  const allCb = document.getElementById(allId);
+
+  const itemCbs = filtersTipoEl.querySelectorAll(
+    'input[type="checkbox"][data-tipo]'
+  );
+
+  allCb.addEventListener('change', () => {
+
+    itemCbs.forEach(cb => {
+      cb.checked = allCb.checked;
+    });
+
+    applyFilters();
+  });
+
+  itemCbs.forEach(cb => {
+
+    cb.addEventListener('change', () => {
+
+      const allChecked =
+        [...itemCbs].every(x => x.checked);
+
+      allCb.checked = allChecked;
+
+      applyFilters();
+    });
+
+  });
+
+};
 
 }
 
