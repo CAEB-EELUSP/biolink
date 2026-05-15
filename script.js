@@ -338,3 +338,9 @@ fetch('empresas.json')
   .catch(err => {
     console.error('Erro ao carregar empresas.json', err);
   });
+
+
+
+
+
+
