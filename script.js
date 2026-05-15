@@ -31,6 +31,7 @@ const orangeIcon = new L.Icon({
 let EMPRESAS = [];
 let MARKERS = [];
 let ALL_AREAS = [];
+let ALL_TIPOS = [];
 
 const filtersAreaEl = document.getElementById('filters-area');
 
