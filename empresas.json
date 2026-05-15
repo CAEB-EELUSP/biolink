@@ -14,7 +14,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1532187863486-abf9d39d6618?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "iff",
@@ -31,7 +32,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1554475901-4538ddfbccc2?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "amyris",
@@ -48,7 +50,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "hypera-pharma",
@@ -65,7 +68,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "beiersdorf",
@@ -82,7 +86,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "suzano-jacarei",
@@ -99,7 +104,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "soufflet-malt",
@@ -116,7 +122,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "borealis",
@@ -133,7 +140,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "bionovis",
@@ -150,7 +158,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "comevap",
@@ -167,7 +176,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1527018601619-a508a2be00cd?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "rovensa-next",
@@ -176,7 +186,7 @@
     "lng": -47.22689,
     "cidade": "Hortolândia-SP",
     "area": "insumos biotecnológicos",
-    "resumo": "Desenvolve, fabrica e comercializa produtos voltados à nutrição vegetal, biocontrole de pragas e doenças, adjuvantes e corretores de solo. Oferece assistência técnica e suporte ao agricultor, com foco em aumentar a produtividade e reduzir impactos ambientais. Tem, dentre seus principais produtos, 'AGER Cálcio', 'AGER Magnésio', 'AGER Zinco', voltados à nutrição vegetal.",
+    "resumo": "Desenvolve, fabrica e comercializa produtos voltados à nutrição vegetal, biocontrole de pragas e doenças, adjuvantes e corretores de solo. Oferece assistência técnica e suporte ao agricultor, com foco em aumentar a produtividade e reduzir impactos ambientais. Tem, dentre seus principais produtos, 'AGER Cálcio', 'AGER Magnésio', 'AGER Zinco', voltados à nutrition vegetal.",
     "email": "info@rovensanext.com",
     "telefone": "(43) 9158-2176",
     "site": "https://www.rovensanext.com.br/",
@@ -184,7 +194,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "biolinker-tech",
@@ -201,7 +212,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1617155093730-a8bf47be792d?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "iqt",
@@ -218,7 +230,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1535557142533-b5e1cc6e2a5d?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "biotecblue",
@@ -235,7 +248,8 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&auto=format&fit=crop&q=60"
   },
   {
     "id": "adium",
@@ -252,6 +266,7 @@
     "estagio": "",
     "remunerado": "Não informado",
     "vale_refeicao": "Não informado",
-    "vale_alimentacao": "Não informado"
+    "vale_alimentacao": "Não informado",
+    "imagem": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&auto=format&fit=crop&q=60"
   }
 ]
