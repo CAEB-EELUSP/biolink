@@ -249,8 +249,10 @@ function applyFilters() {
   });
 }
 
-// ====== Popup ======
+// ====== Popup com informação de Remuneração Ajustada ======
 function popupHtml(emp, distance) {
+
+  const bolsaTexto = emp.remunerado ? `💰 Remunerado: ${emp.remunerado}` : '💰 Remunerado: -';
 
   const linkBtn = `
     <a href="detalhes.html?id=${emp.id}"
@@ -283,6 +285,15 @@ function popupHtml(emp, distance) {
         font-weight:600;
       ">
         📍 ${distance.toFixed(1)} km da EEL-USP
+      </div>
+
+      <div style="
+        margin-top:4px;
+        color:#2e7d32;
+        font-size:0.82rem;
+        font-weight:700;
+      ">
+        ${bolsaTexto}
       </div>
 
       <div style="
