@@ -105,7 +105,68 @@ function renderAreaFilters(areas) {
     <div style="font-weight:700;margin:.2rem 0 .4rem;">
       Área
     </div>
-  `;
+  `
+    function renderTipoFilters(tipos) {
+
+  filtersTipoEl.innerHTML = '';
+
+  const allId = 'tipo__todos';
+
+  filtersTipoEl.insertAdjacentHTML('beforeend', `
+    <label class="filterItem" for="${allId}">
+      <input type="checkbox" id="${allId}" checked />
+      <span>Todos</span>
+    </label>
+  `);
+
+  tipos.forEach((tipo, idx) => {
+
+    const id = `tipo__${idx}`;
+
+    filtersTipoEl.insertAdjacentHTML('beforeend', `
+      <label class="filterItem" for="${id}">
+        <input
+          type="checkbox"
+          id="${id}"
+          data-tipo="${tipo}"
+          checked
+        />
+        <span>${tipo}</span>
+      </label>
+    `);
+
+  });
+
+  const allCb = document.getElementById(allId);
+
+  const itemCbs = filtersTipoEl.querySelectorAll(
+    'input[type="checkbox"][data-tipo]'
+  );
+
+  allCb.addEventListener('change', () => {
+
+    itemCbs.forEach(cb => {
+      cb.checked = allCb.checked;
+    });
+
+    applyFilters();
+  });
+
+  itemCbs.forEach(cb => {
+
+    cb.addEventListener('change', () => {
+
+      const allChecked =
+        [...itemCbs].every(x => x.checked);
+
+      allCb.checked = allChecked;
+
+      applyFilters();
+    });
+
+  });
+
+};
 
   // Checkbox "todos"
   const allId = 'area__todos';
@@ -202,20 +263,30 @@ function applyFilters() {
 
   const maxDistance = Number(
     document.getElementById('distanceFilter').value
-  );
+  )
+    const selectedTipos = [
+  ...filtersTipoEl.querySelectorAll(
+    'input[type="checkbox"][data-tipo]:checked'
+  )
+].map(cb => cb.getAttribute('data-tipo'));;
 
   MARKERS.forEach(({ marker, areas, distance }) => {
+  MARKERS.forEach(({ emp, marker, areas, distance }) => {  
 
     const areaMatch =
       !hideAll &&
       areas.some(a => selectedAreas.includes(a));
+    
+    const tipoMatch =
+  selectedTipos.includes(emp.tipo);
 
     const distanceMatch =
       distance <= maxDistance;
 
     const visible =
-      areaMatch &&
-      distanceMatch;
+  areaMatch &&
+  tipoMatch &&
+  distanceMatch;
 
     if (visible) {
 
@@ -232,67 +303,7 @@ function applyFilters() {
     }
 
   })
-    function renderTipoFilters(tipos) {
-
-  filtersTipoEl.innerHTML = '';
-
-  const allId = 'tipo__todos';
-
-  filtersTipoEl.insertAdjacentHTML('beforeend', `
-    <label class="filterItem" for="${allId}">
-      <input type="checkbox" id="${allId}" checked />
-      <span>Todos</span>
-    </label>
-  `);
-
-  tipos.forEach((tipo, idx) => {
-
-    const id = `tipo__${idx}`;
-
-    filtersTipoEl.insertAdjacentHTML('beforeend', `
-      <label class="filterItem" for="${id}">
-        <input
-          type="checkbox"
-          id="${id}"
-          data-tipo="${tipo}"
-          checked
-        />
-        <span>${tipo}</span>
-      </label>
-    `);
-
-  });
-
-  const allCb = document.getElementById(allId);
-
-  const itemCbs = filtersTipoEl.querySelectorAll(
-    'input[type="checkbox"][data-tipo]'
-  );
-
-  allCb.addEventListener('change', () => {
-
-    itemCbs.forEach(cb => {
-      cb.checked = allCb.checked;
-    });
-
-    applyFilters();
-  });
-
-  itemCbs.forEach(cb => {
-
-    cb.addEventListener('change', () => {
-
-      const allChecked =
-        [...itemCbs].every(x => x.checked);
-
-      allCb.checked = allChecked;
-
-      applyFilters();
-    });
-
-  });
-
-};
+;
 
 }
 
@@ -391,9 +402,13 @@ fetch('empresas.json')
       a.localeCompare(b, 'pt-BR', {
         sensitivity: 'base'
       })
-    );
+    )
+      ALL_TIPOS = uniq(
+    empresas.map(e => e.tipo).filter(Boolean)
+    ).sort();
 
     renderAreaFilters(ALL_AREAS);
+    renderTipoFilters(ALL_TIPOS);
 
     applyFilters();
 
