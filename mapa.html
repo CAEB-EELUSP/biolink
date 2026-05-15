@@ -56,10 +56,18 @@
         *A base de dados ainda está sendo atualizada.
       </p>
     <div class="sectionTitle">Filtros</div>
+    
+    <!-- BLOCO ATUALIZADO COM OS DOIS FILTROS -->
     <div class="filtersBox">
-      <div style="font-weight:700;margin:.2rem 0 .4rem;">Área</div>
-      <!-- checkboxes de área serão inseridos aqui pelo script -->
+      <!-- O script vai inserir a distância e a área aqui dentro -->
       <div id="filters-area"></div>
+      
+      <!-- Linha divisória discreta entre os blocos de filtros -->
+      <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 12px 0;">
+      
+      <!-- Espaço onde o script vai injetar o filtro de Porte -->
+      <div style="font-weight:700;margin:.2rem 0 .4rem;">Porte</div>
+      <div id="filters-porte"></div>
     </div>
 
     <button id="btnLimpar" class="btn" style="margin-top:.4rem;">Limpar filtros</button>
@@ -81,6 +89,7 @@
   <div id="map"></div>
 </div>
 
+  <!-- Scripts estruturais permanecem iguais -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js?v=3"></script>
 </body>
