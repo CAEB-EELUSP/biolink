@@ -60,7 +60,7 @@
     const params = new URLSearchParams(location.search);
     const id = params.get('id');
 
-    // template dados da empresa
+    // template dados da empresa atualizado com benefícios e remuneração
     function tplEmpresa(emp) {
       return `
         <h1>${emp.nome}</h1>
@@ -73,6 +73,9 @@
           <div><b>Telefone:</b><br>${emp.telefone ?? '-'}</div>
           <div><b>Porte:</b><br>${emp.porte ?? '-'}</div>
           <div><b>Informações sobre estágio:</b><br>${emp.estagio ?? '-'}</div>
+          <div><b>Estágio Remunerado?</b><br>${emp.remunerado ?? '-'}</div>
+          <div><b>Vale Refeição (VR):</b><br>${emp.vale_refeicao ?? '-'}</div>
+          <div><b>Vale Alimentação (VA):</b><br>${emp.vale_alimentacao ?? '-'}</div>
         </div>
 
         <div class="actions">
