@@ -107,4 +107,63 @@ function renderizarElementos(empresas) {
                 <h4>${empresa.nome}</h4>
                 <p><strong>Área:</strong> ${empresa.area || 'Não informada'}</p>
                 <p><strong>Porte:</strong> ${empresa.porte}</p>
-                <p><strong>Distância da USP:</strong> ${empresa.distancia.toFixed(1)} km</
+                <p><strong>Distância da USP:</strong> ${empresa.distancia.toFixed(1)} km</p>
+            `;
+            card.addEventListener("click", () => {
+                map.setCenter({ lat: empresa.lat, lng: empresa.lng });
+                map.setZoom(13);
+                infoWindow.setContent(conteudoPopup);
+                infoWindow.open(map, marker);
+            });
+            listaLateral.appendChild(card);
+        }
+    });
+}
+
+// Configura os ouvintes dos inputs de filtro
+function configurarFiltros() {
+    const filtroArea = document.getElementById("filtro-area");
+    const filtroPorte = document.getElementById("filtro-porte");
+    const filtroDistancia = document.getElementById("filtro-distancia");
+
+    const aplicarFiltros = () => {
+        let filtradas = empresasData;
+
+        if (filtroArea && filtroArea.value) {
+            filtradas = filtradas.filter(e => e.area.toLowerCase().includes(filtroArea.value.toLowerCase()));
+        }
+
+        if (filtroPorte && filtroPorte.value) {
+            filtradas = filtradas.filter(e => e.porte === filtroPorte.value);
+        }
+
+        if (filtroDistancia && filtroDistancia.value) {
+            const raioMaximo = parseFloat(filtroDistancia.value);
+            filtradas = filtradas.filter(e => e.distancia <= raioMaximo);
+        }
+
+        renderizarElementos(filtradas);
+    };
+
+    if (filtroArea) filtroArea.addEventListener("input", aplicarFiltros);
+    if (filtroPorte) filtroPorte.addEventListener("change", aplicarFiltros);
+    if (filtroDistancia) filtroDistancia.addEventListener("input", aplicarFiltros);
+}
+
+// Limpa marcadores antigos do mapa
+function limparMarcadores() {
+    markers.forEach(m => m.setMap(null));
+    markers = [];
+}
+
+// Fórmula de Haversine para calcular a distância em KM com base em Lat/Lng
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Raio da Terra em km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
