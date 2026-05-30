@@ -267,18 +267,38 @@ function popupHtml(emp, distance) {
     ? `<img src="${emp.imagem}" alt="${emp.nome}" style="width:100%; max-height:110px; object-fit:cover; border-radius:8px; margin-bottom:8px;" />` 
     : '';
 
-  // Nova seção: Resumo Curto de até 3 linhas
   const resumoHtml = emp.resumo 
     ? `<div style="margin-top:8px; font-size:0.80rem; color:#666; line-height:1.3; border-top:1px dashed #eee; padding-top:6px;">${emp.resumo}</div>` 
     : '';
 
   const bolsaTexto = emp.remunerado ? `💰 Remunerado: ${emp.remunerado}` : '💰 Remunerado: -';
 
+  // Botão do LinkedIn condicional
+  const linkedinBtn = emp.linkedin && emp.linkedin.trim() !== ""
+    ? `<a href="${emp.linkedin}" target="_blank"
+          style="
+            display:inline-block;
+            margin-top:10px;
+            padding:6px 10px;
+            border-radius:6px;
+            background:#0077b5;
+            color:#fff;
+            text-decoration:none;
+            font-size:0.75rem;
+            font-weight:bold;
+            width:100%;
+            text-align:center;
+            box-sizing:border-box;
+          ">
+          Ver no LinkedIn
+       </a>`
+    : '';
+
   const linkBtn = `
     <a href="detalhes.html?id=${emp.id}"
        style="
          display:inline-block;
-         margin-top:10px;
+         margin-top:6px;
          padding:8px 12px;
          border-radius:10px;
          background:#eb6213;
@@ -286,7 +306,8 @@ function popupHtml(emp, distance) {
          text-decoration:none;
          font-weight:700;
          text-align:center;
-         width:calc(100% - 24px);
+         width:100%;
+         box-sizing:border-box;
        ">
        Saiba mais
     </a>`;
@@ -322,6 +343,7 @@ function popupHtml(emp, distance) {
         # ${emp.area ?? (Array.isArray(emp.areas) ? emp.areas.join(", ") : "")}
       </div>
 
+      ${linkedinBtn}
       ${linkBtn}
 
     </div>
