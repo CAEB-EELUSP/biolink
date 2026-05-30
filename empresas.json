@@ -210,7 +210,7 @@
     "lng": -45.58504,
     "cidade": "Taubaté-SP",
     "area": "insumos biotecnológicos",
-    "resumo": "Atua na fabricação de Insumos Farmacêuticos Activos (IFA), excipientes veterinários e produtos químicos finos para perfumaria e higiene pessoal.",
+    "resumo": "Atua na fabricação de Insumos Farmacêuticos Ativos (IFA), excipientes veterinários e produtos químicos finos para perfumaria e higiene pessoal.",
     "email": "contato@iqt.com.br",
     "telefone": "(12) 2125-9606",
     "site": "http://iqt.com.br/",
@@ -250,7 +250,7 @@
     "site": "",
     "linkedin": "",
     "porte": "Multinacional",
-    "estagio": "",
+    "estagio": "a",
     "remunerado": "Não informado",
     "imagem": "https://adiumpharma.com/wp-content/uploads/2024/09/Adium-1.png?profile=RESIZE_400x"
   },
@@ -267,7 +267,7 @@
     "site": "https://ideelab.com.br/",
     "linkedin": "https://www.linkedin.com/company/ideelabbr/",
     "porte": "Startup",
-    "estagio": "",
+    "estagio": "a",
     "remunerado": "Não informado",
     "imagem": "https://ideelab.com.br/wp-content/uploads/2021/04/Logo-IdeeLab-Biotecnologia-V2.png"
   },
@@ -284,7 +284,7 @@
     "site": "https://eurofarma.com.br/",
     "linkedin": "https://www.linkedin.com/company/eurofarma/",
     "porte": "Multinacional",
-    "estagio": "",
+    "estagio": "a",
     "remunerado": "Não informado",
     "imagem": "https://eurofarma.com.br/assets/images/logo-eurofarma.svg"
   },
@@ -301,7 +301,7 @@
     "site": "https://www.kemin.com/brazil/pt",
     "linkedin": "https://www.linkedin.com/company/kemin-industries",
     "porte": "Multinacional",
-    "estagio": "",
+    "estagio": "a",
     "remunerado": "Não informado",
     "imagem": "https://www.kemin.com/etc.clientlibs/kemin/clientlibs/clientlib-site/resources/images/kemin-logo.svg"
   }
