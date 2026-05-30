@@ -1,135 +1,379 @@
-// Configuração inicial do mapa centrado na EEL-USP (Lorena-SP)
-const uspLorena = { lat: -22.69019, lng: -45.11400 };
-let map;
-let markers = [];
-let empresasData = [];
+// ====== Configuração do mapa (Sudeste travado) ======
+const sudesteBounds = L.latLngBounds([[-25.5, -52.0], [-17.0, -38.0]]);
+const map = L.map('map', { maxBounds: sudesteBounds, maxBoundsViscosity: 1.0 });
 
-const iconesPorPorte = {
-    "Startup": "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-    "Nacional": "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-    "Multinacional": "https://maps.google.com/mapfiles/ms/icons/purple-dot.png",
-    "Padrão": "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+map.fitBounds(sudesteBounds);
+map.setMinZoom(map.getBoundsZoom(sudesteBounds));
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// ====== Coordenadas da EEL USP Lorena ======
+const EEL = {
+  nome: "Escola de Engenharia de Lorena (EEL-USP)",
+  lat: -22.5764,
+  lng: -45.4967
 };
 
-function initMap() {
-    map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 9,
-        center: uspLorena,
-        mapTypeControl: false,
-        streetViewControl: false
-    });
+// ====== Ícone laranja ======
+const orangeIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
-    new google.maps.Marker({
-        position: uspLorena,
-        map: map,
-        title: "EEL-USP Lorena",
-        icon: "https://maps.google.com/mapfiles/ms/icons/gold-dot.png"
-    });
+// ====== Estado global ======
+let EMPRESAS = [];
+let MARKERS = [];
+let ALL_AREAS = [];
 
-    // Voltamos para a versão normal para não bugar no seu PC
-    fetch("empresas.json")
-        .then(response => response.json())
-        .then(data => {
-            empresasData = data.map(empresa => {
-                const distancia = calcularDistancia(uspLorena.lat, uspLorena.lng, empresa.lat, empresa.lng);
-                return { ...empresa, distancia: distancia };
-            });
-            renderizarElementos(empresasData);
-            configurarFiltros();
-        })
-        .catch(error => console.error("Erro ao carregar o arquivo:", error));
+const filtersAreaEl = document.getElementById('filters-area');
+const filtersPorteEl = document.getElementById('filters-porte');
+
+// ====== Distância ======
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
 }
 
-function renderizarElementos(empresas) {
-    limparMarcadores();
-    const listaLateral = document.getElementById("lista-empresas");
-    if (listaLateral) listaLateral.innerHTML = "";
+// ====== Helpers ======
+function parseAreas(emp) {
+  if (Array.isArray(emp.areas)) {
+    return emp.areas.map(a => String(a).trim()).filter(Boolean);
+  }
 
-    const infoWindow = new google.maps.InfoWindow();
+  if (emp.area) {
+    return String(emp.area)
+      .split(/[,;|•\/]/g)
+      .map(a => a.trim())
+      .filter(Boolean);
+  }
 
-    empresas.forEach(empresa => {
-        const iconeUrl = iconesPorPorte[empresa.porte] || iconesPorPorte["Padrão"];
-        const marker = new google.maps.Marker({
-            position: { lat: empresa.lat, lng: empresa.lng },
-            map: map,
-            title: empresa.nome,
-            icon: iconeUrl
-        });
-
-        markers.push(marker);
-
-        // Configuração dos botões de Site e LinkedIn
-        const linkSite = empresa.site ? `<a href="${empresa.site}" target="_blank" style="background:#0073b1; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; font-size:12px; font-weight:bold; display:inline-block; margin-right:5px;">Website</a>` : '';
-        const linkLinkedin = empresa.linkedin ? `<a href="${empresa.linkedin}" target="_blank" style="background:#004182; color:white; padding:6px 12px; text-decoration:none; border-radius:4px; font-size:12px; font-weight:bold; display:inline-block;">LinkedIn</a>` : '';
-
-        // Conteúdo do Popup SEM os Vales (VA e VT foram excluídos)
-        const conteudoPopup = `
-            <div style="max-width: 260px; font-family: Arial, sans-serif; padding: 5px;">
-                ${empresa.imagem ? `<img src="${empresa.imagem}" style="width:100%; max-height:90px; object-fit:contain; margin-bottom:10px; display:block;">` : ''}
-                <h3 style="margin:0 0 6px 0; font-size:15px; color:#111;">${empresa.nome}</h3>
-                <p style="margin:0 0 4px 0; font-size:12px; color:#555;"><strong>Cidade:</strong> ${empresa.cidade}</p>
-                <p style="margin:0 0 4px 0; font-size:12px; color:#555;"><strong>Porte:</strong> ${empresa.porte}</p>
-                <p style="margin:0 0 4px 0; font-size:12px; color:#555;"><strong>Distância:</strong> ${empresa.distancia.toFixed(1)} km</p>
-                <p style="margin:5px 0 10px 0; font-size:12px; color:#333; line-height:1.4;">${empresa.resumo}</p>
-                <div style="margin-top:10px; display:block; border-top:1px solid #eee; padding-top:8px;">
-                    ${linkSite}
-                    ${linkLinkedin}
-                </div>
-            </div>
-        `;
-
-        marker.addListener("click", () => {
-            infoWindow.setContent(conteudoPopup);
-            infoWindow.open(map, marker);
-        });
-
-        if (listaLateral) {
-            const card = document.createElement("div");
-            card.className = "empresa-card";
-            card.innerHTML = `
-                <h4>${empresa.nome}</h4>
-                <p><strong>Porte:</strong> ${empresa.porte}</p>
-                <p><strong>Distância:</strong> ${empresa.distancia.toFixed(1)} km</p>
-            `;
-            card.addEventListener("click", () => {
-                map.setCenter({ lat: empresa.lat, lng: empresa.lng });
-                map.setZoom(13);
-                infoWindow.setContent(conteudoPopup);
-                infoWindow.open(map, marker);
-            });
-            listaLateral.appendChild(card);
-        }
-    });
+  return [];
 }
 
-function configurarFiltros() {
-    const filtroPorte = document.getElementById("filtro-porte");
-    const filtroDistancia = document.getElementById("filtro-distancia");
+function uniq(arr) {
+  return [...new Set(arr)];
+}
 
-    const aplicarFiltros = () => {
-        let filtradas = empresasData;
-        if (filtroPorte && filtroPorte.value) {
-            filtradas = filtradas.filter(e => e.porte === filtroPorte.value);
-        }
-        if (filtroDistancia && filtroDistancia.value) {
-            filtradas = filtradas.filter(e => e.distancia <= parseFloat(filtroDistancia.value));
-        }
-        renderizarElementos(filtradas);
+// ====== Filtros de área, porte e remuneração ======
+function renderAreaFilters(areas) {
+
+  filtersAreaEl.innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="font-weight:700;margin-bottom:4px;">
+        Distância máxima da EEL-USP
+      </div>
+
+      <select id="distanceFilter"
+        style="
+          width:100%;
+          padding:8px;
+          border-radius:8px;
+          border:none;
+          font-weight:600;
+        ">
+
+        <option value="999999">Sem limite</option>
+        <option value="50">Até 50 km</option>
+        <option value="100">Até 100 km</option>
+        <option value="200">Até 200 km</option>
+        <option value="300">Até 300 km</option>
+
+      </select>
+    </div>
+
+    <div style="margin-bottom:12px; border-bottom:1px solid #ddd; padding-bottom:12px;">
+      <div style="font-weight:700;margin-bottom:4px;">Remuneração</div>
+      <label class="filterItem" for="filtro__remunerado">
+        <input type="checkbox" id="filtro__remunerado" />
+        <span style="font-weight:600; color:#2e7d32;">💰 Apenas Remunerados</span>
+      </label>
+    </div>
+
+    <div style="font-weight:700;margin:.2rem 0 .4rem;">
+      Área
+    </div>
+  `;
+
+  const allId = 'area__todos';
+
+  filtersAreaEl.insertAdjacentHTML('beforeend', `
+    <label class="filterItem" for="${allId}">
+      <input type="checkbox" id="${allId}" checked />
+      <span>Todos</span>
+    </label>
+  `);
+
+  areas.forEach((area, idx) => {
+    const id = `area__${idx}`;
+
+    filtersAreaEl.insertAdjacentHTML('beforeend', `
+      <label class="filterItem" for="${id}">
+        <input
+          type="checkbox"
+          id="${id}"
+          data-area="${area}"
+          checked
+        />
+        <span>${area}</span>
+      </label>
+    `);
+  });
+
+  const portesDisponiveis = ["Startup", "Nacional", "Multinacional", "Universidade"];
+  
+  filtersPorteEl.innerHTML = `
+    <label class="filterItem" for="porte__todos">
+      <input type="checkbox" id="porte__todos" checked />
+      <span>Todos</span>
+    </label>
+  `;
+  
+  portesDisponiveis.forEach((porte, idx) => {
+    const id = `porte__${idx}`;
+
+    filtersPorteEl.insertAdjacentHTML('beforeend', `
+      <label class="filterItem" for="${id}">
+        <input
+          type="checkbox"
+          id="${id}"
+          data-porte="${porte}"
+          checked
+        />
+        <span>${porte}</span>
+      </label>
+    `);
+  });
+
+  const allCb = document.getElementById(allId);
+  const itemCbs = filtersAreaEl.querySelectorAll('input[type="checkbox"][data-area]');
+
+  allCb.addEventListener('change', () => {
+    itemCbs.forEach(cb => cb.checked = allCb.checked);
+    applyFilters();
+  });
+
+  itemCbs.forEach(cb => {
+    cb.addEventListener('change', () => {
+      allCb.checked = [...itemCbs].every(x => x.checked);
+      applyFilters();
+    });
+  });
+
+  const allPorteCb = document.getElementById('porte__todos');
+  const itemPorteCbs = filtersPorteEl.querySelectorAll('input[type="checkbox"][data-porte]');
+
+  allPorteCb.addEventListener('change', () => {
+    itemPorteCbs.forEach(cb => cb.checked = allPorteCb.checked);
+    applyFilters();
+  });
+
+  itemPorteCbs.forEach(cb => {
+    cb.addEventListener('change', () => {
+      allPorteCb.checked = [...itemPorteCbs].every(x => x.checked);
+      applyFilters();
+    });
+  });
+
+  const filtroRemunerado = document.getElementById('filtro__remunerado');
+  filtroRemunerado.addEventListener('change', applyFilters);
+
+  const distanceFilter = document.getElementById('distanceFilter');
+  distanceFilter.addEventListener('change', applyFilters);
+
+  const btnLimpar = document.getElementById('btnLimpar');
+
+  if (btnLimpar) {
+    btnLimpar.onclick = () => {
+      allCb.checked = true;
+      itemCbs.forEach(cb => cb.checked = true);
+      
+      allPorteCb.checked = true;
+      itemPorteCbs.forEach(cb => cb.checked = true);
+
+      filtroRemunerado.checked = false;
+      distanceFilter.value = "999999";
+
+      applyFilters();
     };
-
-    if (filtroPorte) filtroPorte.addEventListener("change", aplicarFiltros);
-    if (filtroDistancia) filtroDistancia.addEventListener("input", aplicarFiltros);
+  }
 }
 
-function limparMarcadores() {
-    markers.forEach(m => m.setMap(null));
-    markers = [];
+// ====== Aplicar filtros ======
+function applyFilters() {
+
+  const selectedAreas = [
+    ...filtersAreaEl.querySelectorAll('input[type="checkbox"][data-area]:checked')
+  ].map(cb => cb.getAttribute('data-area'));
+
+  const selectedPortes = [
+    ...filtersPorteEl.querySelectorAll('input[type="checkbox"][data-porte]:checked')
+  ].map(cb => cb.getAttribute('data-porte'));
+
+  const maxDistance = Number(document.getElementById('distanceFilter').value);
+  const apenasRemunerados = document.getElementById('filtro__remunerado').checked;
+
+  MARKERS.forEach(({ emp, marker, areas, distance }) => {
+
+    const areaMatch = selectedAreas.length > 0 && areas.some(a => selectedAreas.includes(a));
+    
+    const empresaPorte = emp.porte ?? "";
+    const porteMatch = selectedPortes.length > 0 && selectedPortes.includes(empresaPorte);
+
+    const distanceMatch = distance <= maxDistance;
+
+    let remuneradoMatch = true;
+    if (apenasRemunerados) {
+      remuneradoMatch = (emp.remunerado && emp.remunerado.toLowerCase() === "sim");
+    }
+
+    const visible = areaMatch && porteMatch && distanceMatch && remuneradoMatch;
+
+    if (visible) {
+      if (!map.hasLayer(marker)) {
+        marker.addTo(map);
+      }
+    } else {
+      if (map.hasLayer(marker)) {
+        map.removeLayer(marker);
+      }
+    }
+
+  });
 }
 
-function calcularDistancia(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+// ====== Popup com Imagem, Resumo e Informações ======
+function popupHtml(emp, distance) {
+
+  const imagemHtml = emp.imagem 
+    ? `<img src="${emp.imagem}" alt="${emp.nome}" style="width:100%; max-height:110px; object-fit:cover; border-radius:8px; margin-bottom:8px;" />` 
+    : '';
+
+  // Nova seção: Resumo Curto de até 3 linhas
+  const resumoHtml = emp.resumo 
+    ? `<div style="margin-top:8px; font-size:0.80rem; color:#666; line-height:1.3; border-top:1px dashed #eee; padding-top:6px;">${emp.resumo}</div>` 
+    : '';
+
+  const bolsaTexto = emp.remunerado ? `💰 Remunerado: ${emp.remunerado}` : '💰 Remunerado: -';
+
+  const linkBtn = `
+    <a href="detalhes.html?id=${emp.id}"
+       style="
+         display:inline-block;
+         margin-top:10px;
+         padding:8px 12px;
+         border-radius:10px;
+         background:#eb6213;
+         color:#fff;
+         text-decoration:none;
+         font-weight:700;
+         text-align:center;
+         width:calc(100% - 24px);
+       ">
+       Saiba mais
+    </a>`;
+
+  return `
+    <div style="width:230px">
+      
+      ${imagemHtml}
+
+      <strong style="font-size:0.95rem;">${emp.nome}</strong>
+
+      <div style="margin-top:2px;color:#888;font-size:0.80rem;">
+        📍 ${emp.cidade ?? ""} (${distance.toFixed(1)} km da EEL)
+      </div>
+
+      ${resumoHtml}
+
+      <div style="
+        margin-top:8px;
+        color:#2e7d32;
+        font-size:0.82rem;
+        font-weight:700;
+      ">
+        ${bolsaTexto}
+      </div>
+
+      <div style="
+        margin-top:4px;
+        color:#777;
+        font-size:0.70rem;
+        font-family:'Segoe UI', sans-serif;
+      ">
+        # ${emp.area ?? (Array.isArray(emp.areas) ? emp.areas.join(", ") : "")}
+      </div>
+
+      ${linkBtn}
+
+    </div>
+  `;
 }
+
+// ====== Carregar dados ======
+fetch('empresas.json')
+  .then(r => r.json())
+  .then(empresas => {
+
+    EMPRESAS = empresas;
+
+    MARKERS = empresas.map(emp => {
+
+      const areas = parseAreas(emp);
+
+      const distance = haversine(
+        EEL.lat,
+        EEL.lng,
+        emp.lat,
+        emp.lng
+      );
+
+      const marker = L.marker(
+        [emp.lat, emp.lng],
+        { icon: orangeIcon }
+      )
+      .bindPopup(popupHtml(emp, distance))
+      .addTo(map);
+
+      return {
+        emp,
+        marker,
+        areas,
+        distance
+      };
+
+    });
+
+    ALL_AREAS = uniq(
+      MARKERS.flatMap(m => m.areas)
+    ).sort((a, b) =>
+      a.localeCompare(b, 'pt-BR', {
+        sensitivity: 'base'
+      })
+    );
+
+    renderAreaFilters(ALL_AREAS);
+    applyFilters();
+
+  })
+  .catch(err => {
+    console.error('Erro ao carregar empresas.json', err);
+  });
